@@ -23,9 +23,6 @@
 .spacer{
   min-width:50px;
 }
-.App-link {
-  color: #61dafb;
-}
 
 .col-l {
   display: flex;
@@ -44,6 +41,16 @@
   display: flex;
   flex-direction: row;
   width: 100%;
+  height: 3rem;
+  line-height: 0px;
+  justify-content: space-between;
+  border-bottom: 1px solid white;
+}
+
+.team-stats-row{
+  display: flex;
+  flex-direction: row;
+  width: 800px;
   height: 3rem;
   line-height: 0px;
   justify-content: space-between;
