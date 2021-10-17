@@ -10,7 +10,7 @@ const API_KEY = process.env.REACT_APP_API_KEY
 const BASE_URL = "https://api.pubg.com/shards/steam/"
 
 const options = {
-  season: "seasons/division.bro.official.pc-2018-13/",
+  season: "seasons/division.bro.official.pc-2018-14/",
   playerId1: "account.23d9e6fd73b64e4a84fefdb5dd17c6d9",
   playerId2: "account.363d31e855434e92b9af990059ad03b0",
   playerId3: "account.e1963005d7b445d99f19cd91affb779d",
@@ -31,43 +31,51 @@ const PubgApiConfig = {
 
 function App() {
   // const [friends, setFriends] = useState([])
-  const [player1, setPlayer1] = useState([])
-  const [player2, setPlayer2] = useState([])
-  const [player3, setPlayer3] = useState([])
-  const [player4, setPlayer4] = useState([])
+  const [players, setPlayers] = useState([])
+  const [playerNames, setPlayerNames] = useState([])
+  // useEffect(() => {
+  //   axios.get(API_REQUEST, PubgApiConfig)
+  //     .then(res => {
+  //       const response = res.data;
+  //       setPlayers(response.data)
+  //     })
+  // }, [])
 
-  useEffect(() => {
-    axios.get(API_REQUEST, PubgApiConfig)
-      .then(res => {
-        const response = res.data;
-        setPlayer1(response.data[0].attributes.gameModeStats["squad-fpp"])
-        setPlayer2(response.data[1].attributes.gameModeStats["squad-fpp"])
-        setPlayer3(response.data[2].attributes.gameModeStats["squad-fpp"])
-        setPlayer4(response.data[3].attributes.gameModeStats["squad-fpp"])
-      })
-  }, [])
+  let statsPlayer1 = { ADR: 0 }
+  let statsPlayer2 = { ADR: 0 }
+  let statsPlayer3 = { ADR: 0 }
+  let statsPlayer4 = { ADR: 0 }
+  let teamStats = { ADR: 0 }
 
-  const statsPlayer1 = {
-    ADR: Math.floor((Math.ceil(player1["damageDealt"]) / player1.roundsPlayed))
-  }
-  const statsPlayer2 = {
-    ADR: Math.floor((Math.ceil(player2["damageDealt"]) / player2.roundsPlayed))
-  }
-  const statsPlayer3 = {
-    ADR: Math.floor((Math.ceil(player3["damageDealt"]) / player3.roundsPlayed))
-  }
-  const statsPlayer4 = {
-    ADR: Math.floor((Math.ceil(player4["damageDealt"]) / player4.roundsPlayed))
-  }
+  try {
+    statsPlayer1 = {
+      ADR: Math.floor((Math.ceil(players[0].attributes.gameModeStats["squad-fpp"]["damageDealt"]) / players[0].attributes.gameModeStats["squad-fpp"].roundsPlayed))
+    }
+    statsPlayer2 = {
+      ADR: Math.floor((Math.ceil(players[1].attributes.gameModeStats["squad-fpp"]["damageDealt"]) / players[1].attributes.gameModeStats["squad-fpp"].roundsPlayed))
+    }
+    statsPlayer3 = {
+      ADR: Math.floor((Math.ceil(players[2].attributes.gameModeStats["squad-fpp"]["damageDealt"]) / players[2].attributes.gameModeStats["squad-fpp"].roundsPlayed))
+    }
+    statsPlayer4 = {
+      ADR: Math.floor((Math.ceil(players[3].attributes.gameModeStats["squad-fpp"]["damageDealt"]) / players[3].attributes.gameModeStats["squad-fpp"].roundsPlayed))
+    }
+    teamStats = { ADR: Math.floor((statsPlayer1.ADR + statsPlayer2.ADR + statsPlayer3.ADR + statsPlayer4.ADR) / 4) }
 
-  const teamStats = { ADR: Math.floor((statsPlayer1.ADR + statsPlayer2.ADR + statsPlayer3.ADR + statsPlayer4.ADR) / 4) }
+  } catch {
+    statsPlayer1 = { ADR: 0 }
+    statsPlayer2 = { ADR: 0 }
+    statsPlayer3 = { ADR: 0 }
+    statsPlayer4 = { ADR: 0 }
+    teamStats = { ADR: 0 }
+  }
 
   const SeasonList = [
-    // {
-    //   id: 0,
-    //   url: "",
-    //   seasonName: "Please select a season",
-    // },
+    {
+      id: 0,
+      url: "",
+      seasonName: "Please select a season",
+    },
     {
       id: 1,
       url: "seasons/division.bro.official.pc-2018-12/",
@@ -84,26 +92,58 @@ function App() {
       seasonName: "Season 14"
     }
   ]
-  
+
   const selectSeason = (e) => {
     e.preventDefault();
     getSeasonDetails(e.target.value)
+    getName()
+    accountNumberMatch()
+  }
 
+  const accountNumberMatch = () => {
+    console.log(players)
+    try{
+      let i = 0;
+      while (i < players.length) {
+        let j = 0
+        while (j < playerNames.length) {
+          if (players[i].relationships.player.data.id === playerNames[j].id) {
+            console.log('we match bitch')
+            j++
+          }
+          i++
+        }
+      }
+    } catch {
+      console.log('i\'m too slow')
+    }
   }
 
 
-  const getSeasonDetails = (seasonInfo) =>{
+  const getName = (playerNameInfo) => {
+    const API_REQUEST3 = BASE_URL + "players?filter[playerIds]=" + options.playerId1 + "," + options.playerId2 + "," + options.playerId3 + "," + options.playerId4
+    axios.get(API_REQUEST3, PubgApiConfig)
+      .then(res => {
+        const response = res.data.data
+        setPlayerNames(response)
+        console.log(response)
+
+      })
+  }
+
+
+  const getSeasonDetails = (seasonInfo) => {
     const API_REQUEST2 = BASE_URL + seasonInfo + "gameMode/squad-fpp/players?filter[playerIds]=" + options.playerId1 + "," + options.playerId2 + "," + options.playerId3 + "," + options.playerId4 + "&filter[gamepad]=true"
     axios.get(API_REQUEST2, PubgApiConfig)
-    .then(res => {
-      const response = res.data
-        setPlayer1(response.data[0].attributes.gameModeStats["squad-fpp"])
-        setPlayer2(response.data[1].attributes.gameModeStats["squad-fpp"])
-        setPlayer3(response.data[2].attributes.gameModeStats["squad-fpp"])
-        setPlayer4(response.data[3].attributes.gameModeStats["squad-fpp"])
-    })
+      .then(res => {
+        const response = res.data
+        setPlayers(response.data)
+      })
+
+
   }
-  const handleSubmit = (e) =>{
+
+  const handleSubmit = (e) => {
     alert('I was handled' + e)
     e.preventDefault();
   }
@@ -123,145 +163,47 @@ function App() {
           </select>
         </form>
 
-
-        <div className="two-col">
-          <form id="player-data">
-            <label> Player Name</label>
-            <input id="player-name" type="text" placeholder="Slim_Reaper_" />
-            <button type="submit">Submit</button>
-            <div className="row">
-              <div className="col-l">
-                <p className="data-key">Season</p>
-              </div>
-              <div className="line-decoration"></div>
-              <div className="col-r">
-                <p className="data">13</p>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-l">
-                <p className="data-key">Game Mode</p>
-              </div>
-              <div className="line-decoration"></div>
-              <div className="col-r">
-                <p className="data">Squad</p>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-l">
-                <p className="data-key">ADR</p>
-              </div>
-              <div className="line-decoration"></div>
-              <div className="col-r">
-                <p className="data">{statsPlayer1.ADR}</p>
-              </div>
-            </div>
-          </form>
+        <div className="card-container">
 
 
-          <div className="spacer"></div>
-          <form id="player-data">
-            <label> Player Name</label>
-            <input id="player-name" type="text" placeholder="unladenAFswallow" />
-            <button type="submit">Submit</button>
-            <div className="row">
-              <div className="col-l">
-                <p className="data-key">Season</p>
+          {players.map(e => {
+            // console.log(e.relationships.player.data.id)
+
+            return (
+              <div key={e.relationships.player.data.id}>
+                <form id="player-data">
+                  <div className="card">
+                    <label> Player Name</label>
+
+                    <input id="player-name" type="text" placeholder="names" />
+                    {/* <button type="submit">Submit</button> */}
+                    <div className="row">
+                      <div className="col-l">
+                        <p className="data-key">Game Mode</p>
+                      </div>
+                      <div className="line-decoration"></div>
+                      <div className="col-r">
+                        <p className="data">Squad FPP</p>
+                      </div>
+                    </div>
+                    <div className="row">
+                      <div className="col-l">
+                        <p className="data-key">ADR</p>
+                      </div>
+                      <div className="line-decoration"></div>
+                      <div className="col-r">
+                        <p className="data">{Math.floor(e.attributes.gameModeStats["squad-fpp"]["damageDealt"] / e.attributes.gameModeStats["squad-fpp"].roundsPlayed)}</p>
+                      </div>
+                    </div>
+
+                  </div>
+                </form>
               </div>
-              <div className="line-decoration"></div>
-              <div className="col-r">
-                <p className="data">13</p>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-l">
-                <p className="data-key">Game Mode</p>
-              </div>
-              <div className="line-decoration"></div>
-              <div className="col-r">
-                <p className="data">Squad</p>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-l">
-                <p className="data-key">ADR</p>
-              </div>
-              <div className="line-decoration"></div>
-              <div className="col-r">
-                <p className="data">{statsPlayer2.ADR}</p>
-              </div>
-            </div>
-          </form>
+            )
+          })}
         </div>
 
-        <hr />
-        <div className="two-col">
-          <form id="player-data">
-            <label> Player Name</label>
-            <input id="player-name" type="text" placeholder="MyNameIsBuck_" />
-            <button type="submit">Submit</button>
-            <div className="row">
-              <div className="col-l">
-                <p className="data-key">Season</p>
-              </div>
-              <div className="line-decoration"></div>
-              <div className="col-r">
-                <p className="data">13</p>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-l">
-                <p className="data-key">Game Mode</p>
-              </div>
-              <div className="line-decoration"></div>
-              <div className="col-r">
-                <p className="data">Squad</p>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-l">
-                <p className="data-key">ADR</p>
-              </div>
-              <div className="line-decoration"></div>
-              <div className="col-r">
-                <p className="data">{statsPlayer3.ADR}</p>
-              </div>
-            </div>
-          </form>
-          <div className="spacer"></div>
-          <form id="player-data">
-            <label> Player Name</label>
-            <input id="player-name" type="text" placeholder="sushimaneTV" />
-            <button type="submit">Submit</button>
-            <div className="row">
-              <div className="col-l">
-                <p className="data-key">Season</p>
-              </div>
-              <div className="line-decoration"></div>
-              <div className="col-r">
-                <p className="data">13</p>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-l">
-                <p className="data-key">Game Mode</p>
-              </div>
-              <div className="line-decoration"></div>
-              <div className="col-r">
-                <p className="data">Squad</p>
-              </div>
-            </div>
-            <div className="row">
-              <div className="col-l">
-                <p className="data-key">ADR</p>
-              </div>
-              <div className="line-decoration"></div>
-              <div className="col-r">
-                <p className="data">{statsPlayer4.ADR}</p>
-              </div>
-            </div>
-          </form>
-        </div>
+
         <hr />
         <div className="team-stats-row">
           <div className="col-l">
@@ -271,6 +213,8 @@ function App() {
           <div className="col-r">
             <p className="data">{teamStats.ADR}</p>
           </div>
+          <br />
+
         </div>
       </div>
     </div>
