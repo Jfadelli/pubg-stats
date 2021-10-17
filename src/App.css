@@ -12,6 +12,22 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+.season-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  margin: 0 10px 5px;
+}
+.season-label {
+  margin: 0 10px 0 0;
+}
+.season-items{
+  border-radius: 3px;
+  text-align: center;
+  padding: 0 5px;
+  margin: 0 5px;
+  font-size: 1.25rem;
+}
 
 .card-container{
   display: flex;
@@ -29,7 +45,7 @@
   height: 100%;
   background-color: rgba(255, 255, 255, .1);
   width: 400px;
-  height: 300px;
+  height: 100%;
   border-radius: 2px;
   margin: 10px;
 }
@@ -63,12 +79,14 @@
 .team-stats-row{
   display: flex;
   flex-direction: row;
-  width: 800px;
+  max-width: 800px;
+  min-width: 400px;
   height: 3rem;
   line-height: 0px;
   justify-content: space-between;
   border-bottom: 1px solid white;
   margin: 0 0 45px 0;
+
 }
 
 .data{
@@ -87,14 +105,22 @@
 }
 
 input{
+  width:100%;
   border-radius: 2px;
   height: 1.5rem;
-  margin: 0 10px 0 10px;
   font-size: 1.5rem;
   border: 0px solid black;
   padding: 5px;
   margin: 5px;
   text-align: center;
+}
+.player-name {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-end ;
+  width:100%;
+  
 }
 button{
   font-size: 1.25rem;
@@ -107,4 +133,7 @@ button{
 
 hr{
   margin: 30px 0 
+}
+.data-key{
+  padding: 0 0 0 6px;
 }

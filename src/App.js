@@ -1,6 +1,8 @@
 import './App.css';
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
+import { userData } from './data/userData.js'
+import { seasonList } from './data/seasonList.js'
 // import playerData from './player-data.json'
 
 // const player1 = playerData.data[0].attributes.gameModeStats["squad-fpp"]
@@ -26,20 +28,17 @@ const PubgApiConfig = {
   }
 }
 
-// function that pulls player account ID from player name
-
-
 function App() {
-  // const [friends, setFriends] = useState([])
+
   const [players, setPlayers] = useState([])
-  const [playerNames, setPlayerNames] = useState([])
-  // useEffect(() => {
-  //   axios.get(API_REQUEST, PubgApiConfig)
-  //     .then(res => {
-  //       const response = res.data;
-  //       setPlayers(response.data)
-  //     })
-  // }, [])
+  // const [playerNames, setPlayerNames] = useState([])
+  useEffect(() => {
+    axios.get(API_REQUEST, PubgApiConfig)
+      .then(res => {
+        const response = res.data;
+        setPlayers(response.data)
+      })
+  }, [])
 
   let statsPlayer1 = { ADR: 0 }
   let statsPlayer2 = { ADR: 0 }
@@ -70,67 +69,27 @@ function App() {
     teamStats = { ADR: 0 }
   }
 
-  const SeasonList = [
-    {
-      id: 0,
-      url: "",
-      seasonName: "Please select a season",
-    },
-    {
-      id: 1,
-      url: "seasons/division.bro.official.pc-2018-12/",
-      seasonName: "Season 12"
-    },
-    {
-      id: 2,
-      url: "seasons/division.bro.official.pc-2018-13/",
-      seasonName: "Season 13"
-    },
-    {
-      id: 3,
-      url: "seasons/division.bro.official.pc-2018-14/",
-      seasonName: "Season 14"
-    }
-  ]
 
   const selectSeason = (e) => {
     e.preventDefault();
     getSeasonDetails(e.target.value)
-    getName()
-    accountNumberMatch()
   }
 
-  const accountNumberMatch = () => {
-    console.log(players)
-    try{
-      let i = 0;
-      while (i < players.length) {
-        let j = 0
-        while (j < playerNames.length) {
-          if (players[i].relationships.player.data.id === playerNames[j].id) {
-            console.log('we match bitch')
-            j++
-          }
-          i++
-        }
-      }
-    } catch {
-      console.log('i\'m too slow')
-    }
+  const checkUserDataDb = (name, userData) => {
+    console.log(name)
+    console.log('true')
   }
 
+  // const getName = (playerNameInfo) => {
+  //   const API_REQUEST3 = BASE_URL + "players?filter[playerIds]=" + options.playerId1 + "," + options.playerId2 + "," + options.playerId3 + "," + options.playerId4
+  //   axios.get(API_REQUEST3, PubgApiConfig)
+  //     .then(res => {
+  //       const response = res.data.data
+  //       setPlayerNames(response)
+  //       console.log(response)
 
-  const getName = (playerNameInfo) => {
-    const API_REQUEST3 = BASE_URL + "players?filter[playerIds]=" + options.playerId1 + "," + options.playerId2 + "," + options.playerId3 + "," + options.playerId4
-    axios.get(API_REQUEST3, PubgApiConfig)
-      .then(res => {
-        const response = res.data.data
-        setPlayerNames(response)
-        console.log(response)
-
-      })
-  }
-
+  //     })
+  // }
 
   const getSeasonDetails = (seasonInfo) => {
     const API_REQUEST2 = BASE_URL + seasonInfo + "gameMode/squad-fpp/players?filter[playerIds]=" + options.playerId1 + "," + options.playerId2 + "," + options.playerId3 + "," + options.playerId4 + "&filter[gamepad]=true"
@@ -139,31 +98,47 @@ function App() {
         const response = res.data
         setPlayers(response.data)
       })
-
-
   }
 
   const handleSubmit = (e) => {
-    alert('I was handled' + e)
     e.preventDefault();
+    checkUserDataDb(e.target.value)
+    // alert('I was handled' + e)
+
   }
+
   return (
     <div className="App">
       <div className="App-header">
         <h1>Pubg-Stats-App</h1>
-
-        <label>Season</label>
         <form onSubmit={handleSubmit}>
-          <select onChange={selectSeason} id="season-items">
-            {SeasonList.map(e => {
-              return (
-                <option value={e.url} placeholder="Please Select a Season" key={e.id}>{e.seasonName}</option>
-              )
-            })}
-          </select>
+          <div className="season-row">
+            {/* <label className="season-label">Season</label> */}
+            <select className="season-items" onChange={selectSeason}>
+              {seasonList.map(e => {
+                return (
+                  <option value={e.url} placeholder="Please Select a Season" key={e.id}>{e.seasonName}</option>
+                )
+              })}
+            </select>
+          </div>
         </form>
 
+        <hr />
+
+        <div className="team-stats-row">
+          <div className="col-l">
+            <p className="data-key">Team ADR</p>
+          </div>
+          <div className="line-decoration"></div>
+          <div className="col-r">
+            <p className="data">{teamStats.ADR}</p>
+          </div>          
+        </div>
+          
+
         <div className="card-container">
+          
 
 
           {players.map(e => {
@@ -171,12 +146,25 @@ function App() {
 
             return (
               <div key={e.relationships.player.data.id}>
-                <form id="player-data">
-                  <div className="card">
-                    <label> Player Name</label>
+                <form onSubmit={handleSubmit} id="player-data">
 
-                    <input id="player-name" type="text" placeholder="names" />
-                    {/* <button type="submit">Submit</button> */}
+                  <div className="card">
+
+
+                    <div className="row">
+                      <div className="col-l">
+                        <p className="data-key"> Player Name</p>
+                      </div>
+                      
+                      <div className="player-name">
+                        <input id="player-name" type="text" placeholder={userData.filter(currUser => currUser.accountNumber === e.relationships.player.data.id)[0].userName} />
+                      </div>
+                    </div>
+
+
+                    {/* <button type="submit" onSubmit={handleSubmit}>Submit</button> */}
+
+
                     <div className="row">
                       <div className="col-l">
                         <p className="data-key">Game Mode</p>
@@ -204,18 +192,9 @@ function App() {
         </div>
 
 
-        <hr />
-        <div className="team-stats-row">
-          <div className="col-l">
-            <p className="data-key">Team ADR</p>
-          </div>
-          <div className="line-decoration"></div>
-          <div className="col-r">
-            <p className="data">{teamStats.ADR}</p>
-          </div>
+
           <br />
 
-        </div>
       </div>
     </div>
   );
