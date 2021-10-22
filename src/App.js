@@ -3,24 +3,26 @@ import React, { useEffect, useState } from 'react'
 import axios from 'axios';
 import { userData } from './data/userData.js'
 import { seasonList } from './data/seasonList.js'
-// import playerData from './player-data.json'
-
-// const player1 = playerData.data[0].attributes.gameModeStats["squad-fpp"]
-// const player2 = playerData.data[1].attributes.gameModeStats["squad-fpp"]
 
 const API_KEY = process.env.REACT_APP_API_KEY
 const BASE_URL = "https://api.pubg.com/shards/steam/"
 
-const options = {
+const defaultOptions = {
+  gameMode: {
+    curr: "gameMode/squad-fpp/",
+    squads: "gameMode/squad-fpp/",
+    duos: 'gameMode/duos-fpp/'
+  },
   season: "seasons/division.bro.official.pc-2018-14/",
   playerId1: "account.23d9e6fd73b64e4a84fefdb5dd17c6d9",
   playerId2: "account.363d31e855434e92b9af990059ad03b0",
   playerId3: "account.e1963005d7b445d99f19cd91affb779d",
-  playerId4: "account.59e341f6653a4104b3bed2c4eeb00f5b"
+  playerId4: "account.59e341f6653a4104b3bed2c4eeb00f5b",
+  playerId5: "account.80b022e4ba474ae292555b92dc68221f",
+  playerId6: "account.cd577e5a2afe46b3ba76e654bc57a3ed"
 }
 
-const API_REQUEST = BASE_URL + options.season + "gameMode/squad-fpp/players?filter[playerIds]=" + options.playerId1 + "," + options.playerId2 + "," + options.playerId3 + "," + options.playerId4 + "&filter[gamepad]=true"
-
+const API_REQUEST = BASE_URL + defaultOptions.season + defaultOptions.gameMode.squads + "players?filter[playerIds]=" + defaultOptions.playerId1 + "," + defaultOptions.playerId2 + "," + defaultOptions.playerId3 + "," + defaultOptions.playerId4 + "," + defaultOptions.playerId5 + "," + defaultOptions.playerId6 + "&filter[gamepad]=true"
 const PubgApiConfig = {
   headers: {
     Accept: "application/vnd.api+json",
@@ -29,8 +31,12 @@ const PubgApiConfig = {
 }
 
 function App() {
-
-  const [players, setPlayers] = useState([])
+  const [gameMode, setGameMode] = useState();
+  const [options, setOptions] = useState(defaultOptions);
+  const [howManyPlayers, setHowManyPlayers] = useState();
+  const [players, setPlayers] = useState([]);
+  const [currUser, setCurrUser] = useState();
+  // const [stash, setStash] = useState([])
   // const [playerNames, setPlayerNames] = useState([])
   useEffect(() => {
     axios.get(API_REQUEST, PubgApiConfig)
@@ -59,14 +65,14 @@ function App() {
     statsPlayer4 = {
       ADR: Math.floor((Math.ceil(players[3].attributes.gameModeStats["squad-fpp"]["damageDealt"]) / players[3].attributes.gameModeStats["squad-fpp"].roundsPlayed))
     }
-    teamStats = { ADR: Math.floor((statsPlayer1.ADR + statsPlayer2.ADR + statsPlayer3.ADR + statsPlayer4.ADR) / 4) }
+    teamStats = { ADR: Math.floor(((statsPlayer1.ADR ? statsPlayer1.ADR : 0) + (statsPlayer2.ADR ? statsPlayer2.ADR : 0) + (statsPlayer3.ADR ? statsPlayer3.ADR : 0) + (statsPlayer4.ADR ? statsPlayer4.ADR : 0)) / 4) }
 
   } catch {
-    statsPlayer1 = { ADR: 0 }
-    statsPlayer2 = { ADR: 0 }
-    statsPlayer3 = { ADR: 0 }
-    statsPlayer4 = { ADR: 0 }
-    teamStats = { ADR: 0 }
+    statsPlayer1 = { ADR: "N/A" }
+    statsPlayer2 = { ADR: "N/A" }
+    statsPlayer3 = { ADR: "N/A" }
+    statsPlayer4 = { ADR: "N/A" }
+    teamStats = { ADR: "N/A" }
   }
 
 
@@ -75,13 +81,10 @@ function App() {
     getSeasonDetails(e.target.value)
   }
 
-  const checkUserDataDb = (name, userData) => {
-    console.log(name)
-    console.log('true')
-  }
+
 
   // const getName = (playerNameInfo) => {
-  //   const API_REQUEST3 = BASE_URL + "players?filter[playerIds]=" + options.playerId1 + "," + options.playerId2 + "," + options.playerId3 + "," + options.playerId4
+  //   const API_REQUEST3 = BASE_URL + "players?filter[playerIds]=" + defaultOptions.playerId1 + "," + defaultOptions.playerId2 + "," + defaultOptions.playerId3 + "," + defaultOptions.playerId4
   //   axios.get(API_REQUEST3, PubgApiConfig)
   //     .then(res => {
   //       const response = res.data.data
@@ -92,7 +95,12 @@ function App() {
   // }
 
   const getSeasonDetails = (seasonInfo) => {
-    const API_REQUEST2 = BASE_URL + seasonInfo + "gameMode/squad-fpp/players?filter[playerIds]=" + options.playerId1 + "," + options.playerId2 + "," + options.playerId3 + "," + options.playerId4 + "&filter[gamepad]=true"
+    console.log(options)
+    if (options.gameMode.curr === '') {
+      setOptions(...gameMode.curr = gameMode.squads)
+      console.log(gameMode.curr)
+    }
+    const API_REQUEST2 = BASE_URL + seasonInfo + options.gameMode.curr + "players?filter[playerIds]=" + defaultOptions.playerId1 + "," + defaultOptions.playerId2 + "," + defaultOptions.playerId3 + "," + defaultOptions.playerId4 + "," + defaultOptions.playerId5 + "," + defaultOptions.playerId6 + "&filter[gamepad]=true"
     axios.get(API_REQUEST2, PubgApiConfig)
       .then(res => {
         const response = res.data
@@ -100,18 +108,51 @@ function App() {
       })
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    checkUserDataDb(e.target.value)
-    // alert('I was handled' + e)
+  const handleHowManyPlayersSubmit = (e) => {
+    e.preventDefault()
+    setHowManyPlayers(e.target.value)
+  }
 
+  const handleGameModeChange = (e) => {
+    const { value } = e.target
+    e.preventDefault();
+    setOptions(options => ({
+      ...options.gameMode,
+      curr: value
+
+    }))
+    // getSeasonDetails("seasons/division.bro.official.pc-2018-14/")
+  }
+
+  const handleUserData = (e) => {
+    e.preventDefault()
+    setCurrUser(e.target.value)
+  }
+
+  const checkUserDataDb = (name) => {
+    for (let i = 0; i < userData.length; i++) {
+      if (name === userData[i].userName) {
+        console.log('this name is in the db: ', name)
+        return
+      }
+      else {
+      }
+
+    }
+    console.log('name not in db.')
+  }
+
+  const getUserData = (e) => {
+    e.preventDefault()
+    checkUserDataDb(currUser)
   }
 
   return (
     <div className="App">
       <div className="App-header">
         <h1>Pubg-Stats-App</h1>
-        <form onSubmit={handleSubmit}>
+
+        <form>
           <div className="season-row">
             {/* <label className="season-label">Season</label> */}
             <select className="season-items" onChange={selectSeason}>
@@ -124,7 +165,29 @@ function App() {
           </div>
         </form>
 
-        <hr />
+        <form onSubmit={handleHowManyPlayersSubmit}>
+          <div className="season-row">
+            <p className="season-label">Players</p>
+            <select placeholder="4" onChange={handleHowManyPlayersSubmit}>
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+            </select>
+          </div>
+        </form>
+
+        <form onSubmit={handleGameModeChange}>
+          <div className="season-row">
+            <p className="season-label">Count</p>
+            <select onChange={handleGameModeChange}>
+              <option value={defaultOptions.gameMode.squads}>Squads</option>
+              <option value={defaultOptions.gameMode.duos}>Duos</option>
+            </select>
+          </div>
+        </form>
+
+        <br />
 
         <div className="team-stats-row">
           <div className="col-l">
@@ -132,39 +195,24 @@ function App() {
           </div>
           <div className="line-decoration"></div>
           <div className="col-r">
-            <p className="data">{teamStats.ADR}</p>
-          </div>          
+            <p className="data" >{teamStats.ADR ? teamStats.ADR : "N/A"}</p>
+          </div>
         </div>
-          
 
         <div className="card-container">
-          
-
-
           {players.map(e => {
-            // console.log(e.relationships.player.data.id)
-
             return (
               <div key={e.relationships.player.data.id}>
-                <form onSubmit={handleSubmit} id="player-data">
-
+                <form onSubmit={getUserData} id="player-data">
                   <div className="card">
-
-
                     <div className="row">
                       <div className="col-l">
                         <p className="data-key"> Player Name</p>
                       </div>
-                      
                       <div className="player-name">
-                        <input id="player-name" type="text" placeholder={userData.filter(currUser => currUser.accountNumber === e.relationships.player.data.id)[0].userName} />
+                        <input onSubmit={getUserData} onInput={handleUserData} type="text" placeholder={userData.filter(currUser => currUser.accountNumber === e.relationships.player.data.id)[0].userName} />
                       </div>
                     </div>
-
-
-                    {/* <button type="submit" onSubmit={handleSubmit}>Submit</button> */}
-
-
                     <div className="row">
                       <div className="col-l">
                         <p className="data-key">Game Mode</p>
@@ -180,7 +228,7 @@ function App() {
                       </div>
                       <div className="line-decoration"></div>
                       <div className="col-r">
-                        <p className="data">{Math.floor(e.attributes.gameModeStats["squad-fpp"]["damageDealt"] / e.attributes.gameModeStats["squad-fpp"].roundsPlayed)}</p>
+                        <p className="data">{Math.floor(e.attributes.gameModeStats["squad-fpp"]["damageDealt"] / e.attributes.gameModeStats["squad-fpp"].roundsPlayed) ? Math.floor(e.attributes.gameModeStats["squad-fpp"]["damageDealt"] / e.attributes.gameModeStats["squad-fpp"].roundsPlayed) : 0}</p>
                       </div>
                     </div>
 
@@ -190,11 +238,6 @@ function App() {
             )
           })}
         </div>
-
-
-
-          <br />
-
       </div>
     </div>
   );
