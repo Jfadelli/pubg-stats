@@ -1,5 +1,8 @@
 .App {
   text-align: center;
+  background-color: #282c34;
+  min-height: 100vh;
+  color:white;
 }
 
 .App-header {
@@ -12,6 +15,7 @@
   font-size: calc(10px + 2vmin);
   color: white;
 }
+
 .season-row {
   display: flex;
   flex-direction: row;
@@ -137,4 +141,54 @@ hr{
 }
 .data-key{
   padding: 0 0 0 6px;
+}
+
+.navbar{
+  display: flex;
+  flex-direction: row;
+  width: 800px;
+}
+
+.nav-wrapper{
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: flex-start;
+  background-color: rgb(69, 76, 90);
+  padding: 10px 0px 10px 50px;
+}
+
+.nav-link{
+  color: white;
+  margin: 10px;
+  border: 2px solid white;
+  border-radius: 6px;
+  width: 100px;
+  height: 25px;
+  text-decoration: none;
+}
+.home {
+  display: flex;
+  height: 60vh;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 2rem;
+  
+}
+
+.warm-up-wrapper{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  
+}
+
+.warm-up-input{
+  width: 200px;
+  height: 30px;
+  border: 1px solid white;
+  border-radius: 6px;
+  text-align: center;
+  color: white;
+  background-color:rgb(37, 37, 54)
 }

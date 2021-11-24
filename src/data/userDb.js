@@ -19,10 +19,5 @@ export const userData = [
     }, {
         accountNumber: "account.cd577e5a2afe46b3ba76e654bc57a3ed",
         userName: "Ctrl_Shft_CEL"
-    },
-    {
-        accountNumber: "account.123",
-        userName:"Eshteben"
     }
 ]
-
