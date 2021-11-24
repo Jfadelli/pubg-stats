@@ -249,7 +249,7 @@ const Stats = () => {
           })}
         </div>
 
-        <div className="card-container">
+        {/* <div className="card-container">
           {players.map(e => {
             return (
               <div key={e.relationships.player.data.id}>
@@ -300,7 +300,7 @@ const Stats = () => {
             )
           })}
           
-        </div>
+        </div> */}
         <button onClick={null}>Update Roster</button>
       </div>
     </div>

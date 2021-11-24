@@ -19,6 +19,7 @@ let Styles = [
 
 const Armory = {
     'AR': {
+        'AKM':{'scopes': ['Ironsights', 'Red Dot', 'Holo', '2x', '3x', '4x', '6x'], 'grips':['Stock'],'tips':['Comp', 'Suppressor', 'Flash Hider']},
         'M16':{'scopes': ['Ironsights', 'Red Dot', 'Holo', '2x', '3x', '4x', '6x'], 'grips':['Stock'],'tips':['Comp', 'Suppressor', 'Flash Hider']},
         'M4': {'scopes': ['Ironsights', 'Red Dot', 'Holo', '2x', '3x', '4x', '6x'], 'grips': ['Vert Grip', 'Lightweight Grip', 'Thumbgrip', 'Half Grip', 'Angled Grip'], 'tips': ['Comp', 'Suppressor', 'Flash Hider']},
         'Scar': {'scopes': ['Ironsights', 'Red Dot', 'Holo', '2x', '3x', '4x', '6x'], 'grips': ['Vert Grip', 'Lightweight Grip', 'Thumbgrip', 'Half Grip', 'Angled Grip'], 'tips': ['Comp', 'Suppressor', 'Flash Hider']},

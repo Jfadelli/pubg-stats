@@ -1,19 +1,21 @@
 import { useState, useEffect } from 'react'
 import { Armory } from '../data/WarmUpData.js'
+import { images } from '../data/ImagesTable'
+
 const WarmUp = () => {
     const [selection, setSelection] = useState('')
     const [currLoadout, setCurrLoadout] = useState({
-         currWeapon : "",
-         currScope : "",
-         currTip : "",
-         currGrip : "",
+        currWeapon: "",
+        currScope: "",
+        currTip: "",
+        currGrip: "",
     }
     )
     let weaponClass = Object.keys(Armory)
     weaponClass.unshift('Weapon Class')
 
     const handleSubmit = (e) => {
-        pick()  
+        pick()
 
     }
     const handleChange = (e) => {
@@ -37,7 +39,7 @@ const WarmUp = () => {
                 currTip: currTip,
                 currGrip: currGrip,
             })
-        } catch(e) {
+        } catch (e) {
             console.log('error', e)
         }
     }
@@ -58,16 +60,21 @@ const WarmUp = () => {
                         )
                     })}
                 </select>
-                
+
             </form>
-            <button  className="submit-button" type="button" onClick={handleSubmit}>Submit</button>
+            <button className="submit-button" type="button" onClick={handleSubmit}>Submit</button>
             <div className="weapon-card">
+                <div className="img-container">
+                    <img alt="weapon" src={images[currLoadout.currWeapon] ? images[currLoadout.currWeapon] : images["Dice"]} />
+                </div>
                 <div className="weapon">
-                    {/* <img alt="weapon"></img> */}
                     <h2>{currLoadout.currWeapon ? currLoadout.currWeapon : "Choose a class"}</h2>
-                    <p class="attachments">Scope: {currLoadout.currScope ? currLoadout.currScope:"" }</p>
-                    <p class="attachments">Grip: {currLoadout.currGrip ? currLoadout.currGrip:"" } </p>
-                    <p class="attachments">Tip: {currLoadout.currTip ? currLoadout.currTip:"" } </p>
+                    <div className="weapon-details">
+                        <p class="attachments">{currLoadout.currScope ? "Scope: " + currLoadout.currScope : ""}</p>
+                        <p class="attachments"> {currLoadout.currGrip ? "Grip: " + currLoadout.currGrip : ""} </p>
+                        <p class="attachments">{currLoadout.currTip ? "Tip: " + currLoadout.currTip : ""} </p>
+                    </div>
+
 
                 </div>
             </div>
