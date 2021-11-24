@@ -180,6 +180,8 @@ hr{
   display: flex;
   flex-direction: column;
   justify-content: center;
+  /* background-color:pink; */
+  align-items: center;;
   
 }
 
@@ -191,4 +193,9 @@ hr{
   text-align: center;
   color: white;
   background-color:rgb(37, 37, 54)
+}
+
+.submit-button{
+  margin: 20px 0 0 0;
+  width: 100px;
 }
