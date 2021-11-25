@@ -16,7 +16,6 @@ const WarmUp = () => {
 
     const handleSubmit = (e) => {
         pick()
-
     }
     const handleChange = (e) => {
         e.preventDefault()
@@ -30,7 +29,7 @@ const WarmUp = () => {
             let scopesList = selection[currWeapon]['scopes']
             let currScope = scopesList[Math.floor(Math.random() * scopesList.length)]
             let tipsList = selection[currWeapon]['tips']
-            let currTip = scopesList[Math.floor(Math.random() * tipsList.length)]
+            let currTip = tipsList[Math.floor(Math.random() * tipsList.length)]
             let gripsList = selection[currWeapon]['grips']
             let currGrip = gripsList[Math.floor(Math.random() * gripsList.length)]
             setCurrLoadout({
@@ -62,7 +61,8 @@ const WarmUp = () => {
                 </select>
 
             </form>
-            <button className="submit-button" type="button" onClick={handleSubmit}>Submit</button>
+            
+            
             <div className="weapon-card">
                 <div className="img-container">
                     <img alt="weapon" src={images[currLoadout.currWeapon] ? images[currLoadout.currWeapon] : images["Dice"]} />
@@ -78,7 +78,8 @@ const WarmUp = () => {
 
                 </div>
             </div>
-
+            <button  style={{display:currLoadout.currWeapon? "inline":"none"}}className="submit-button" type="button" onClick={handleSubmit}>Random</button>
         </div>);
+        
 }
 export default WarmUp;

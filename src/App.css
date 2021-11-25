@@ -198,6 +198,10 @@ hr{
 .submit-button{
   margin: 20px 0 0 0;
   width: 100px;
+  border-radius: 6px;
+  border: 2px solid rgb(131, 149, 169);
+  background-color: rgb(72, 82, 93);
+  color:white
 }
 
 .weapon-card{
@@ -206,6 +210,8 @@ hr{
   border-radius: 6px;
   width: 300px;
   height: 500px;
+  box-shadow: rgba(228, 222, 222, 0.103) 10px 10px 20px 10px;
+  background-color: rgba(128, 128, 128, .4)
 }
 .img-container{
   display: flex;

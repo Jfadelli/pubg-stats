@@ -29,53 +29,28 @@ const PubgApiConfig = {
   }
 }
 
-let statsPlayer1 = { ADR: 0 }
-let statsPlayer2 = { ADR: 0 }
-let statsPlayer3 = { ADR: 0 }
-let statsPlayer4 = { ADR: 0 }
-let teamStats = { ADR: 0 }
-
 const Stats = () => {
   const [gameMode, setGameMode] = useState();
   const [options, setOptions] = useState(defaultOptions);
   const [howManyPlayers, setHowManyPlayers] = useState();
   const [players, setPlayers] = useState([]);
   const [currUser, setCurrUser] = useState();
-
   const [ApiRequest, SetApiRequest] = useState(BASE_URL + defaultOptions.season + defaultOptions.gameMode.squads + "players?filter[playerIds]=" + defaultOptions.playerId1 + "," + defaultOptions.playerId2 + "," + defaultOptions.playerId3 + "," + defaultOptions.playerId4 + "," + defaultOptions.playerId5 + "," + defaultOptions.playerId6 + "&filter[gamepad]=true");
-
-  const [roster, setRoster] = useState({
-    player1: {
-      name: '',
-      accountNumber: ''
-    },
-    player2: {
-      name: '',
-      accountNumber: ''
-    },
-    player3: {
-      name: '',
-      accountNumber: ''
-    },
-    player4: {
-      name: '',
-      accountNumber: ''
-    }
-
-  })
-
-  const [ApiRequest2, SetApiRequest2] = useState(BASE_URL + defaultOptions.season + defaultOptions.gameMode.squads + "players?filter[playerIds]=" + roster.player1.accountNumber + "," + roster.player1.accountNumber + "," + roster.player1.accountNumber + "," + roster.player1.accountNumber + ",&filter[gamepad]=true");
+  const [roster, setRoster] = useState([])
 
   useEffect(() => {
     axios.get(ApiRequest, PubgApiConfig)
       .then(res => {
         const response = res.data;
         setPlayers(response.data)
-        console.log(roster)
       })
-  }, [roster])
+  }, [])
 
-
+  let statsPlayer1 = { ADR: 0 }
+  let statsPlayer2 = { ADR: 0 }
+  let statsPlayer3 = { ADR: 0 }
+  let statsPlayer4 = { ADR: 0 }
+  let teamStats = { ADR: 0 }
 
   try {
     statsPlayer1 = {
@@ -100,14 +75,43 @@ const Stats = () => {
     teamStats = { ADR: "N/A" }
   }
 
-  const updateData = () => {
-  
-    axios.get(ApiRequest2, PubgApiConfig)
-      .then(res => {
-        const response = res.data;
-        setPlayers(response.data)
-        console.log(roster)
+  const selectSeason = (e) => {
+    e.preventDefault();
+    getSeasonDetails(e.target.value)
+  }
 
+  const changeRoster = (e) => {
+    e.preventDefault()
+    console.log(e.target)
+    for (let i = 0; i < userData.length; i++) {
+      if (e.target.value === userData[i].userName) {
+        setRoster(roster => [...roster, userData[i].accountNumber])
+      }
+    }
+  }
+
+  // const getName = (playerNameInfo) => {
+  //   const API_REQUEST3 = BASE_URL + "players?filter[playerIds]=" + defaultOptions.playerId1 + "," + defaultOptions.playerId2 + "," + defaultOptions.playerId3 + "," + defaultOptions.playerId4
+  //   axios.get(API_REQUEST3, PubgApiConfig)
+  //     .then(res => {
+  //       const response = res.data.data
+  //       setPlayerNames(response)
+  //       console.log(response)
+
+  //     })
+  // }
+
+  const getSeasonDetails = (seasonInfo) => {
+    console.log(options)
+    if (options.gameMode.curr === '') {
+      setOptions(...gameMode.curr = gameMode.squads)
+      console.log(gameMode.curr)
+    }
+    const API_REQUEST2 = BASE_URL + seasonInfo + options.gameMode.curr + "players?filter[playerIds]=" + defaultOptions.playerId1 + "," + defaultOptions.playerId2 + "," + defaultOptions.playerId3 + "," + defaultOptions.playerId4 + "," + defaultOptions.playerId5 + "," + defaultOptions.playerId6 + "&filter[gamepad]=true"
+    axios.get(API_REQUEST2, PubgApiConfig)
+      .then(res => {
+        const response = res.data
+        setPlayers(response.data)
       })
   }
 
@@ -124,62 +128,35 @@ const Stats = () => {
       curr: value
 
     }))
+    // getSeasonDetails("seasons/division.bro.official.pc-2018-14/")
   }
 
-  const getUserData = (e) => {
-    let currUser = e.target.value
+  const handleUserData = (e) => {
     e.preventDefault()
-    checkUserDataDb(currUser)
-    console.log('submitted')
+    setCurrUser(e.target.value)
   }
-
 
   const checkUserDataDb = (name) => {
     for (let i = 0; i < userData.length; i++) {
       if (name === userData[i].userName) {
-        let currUserName = userData[i].userName
-        let currAccountNumber = userData[i].accountNumber
-
-        if (roster.player1.name === '') {
-          setRoster({...roster,
-            player1: {
-              name: currUserName,
-              accountNumber: currAccountNumber
-            }
-          })
-        } else if (roster.player2.name === '') {
-          setRoster({...roster,
-            player2: {
-              name: currUserName,
-              accountNumber: currAccountNumber
-            }
-          })
-
-        }
-        else if (roster.player3.name === '') {
-          setRoster({...roster,
-            player3: {
-              name: currUserName,
-              accountNumber: currAccountNumber
-            }
-          })
-
-        }
-        else if (roster.player4.name === '') {
-          setRoster({...roster,
-            player4: {
-              name: currUserName,
-              accountNumber: currAccountNumber
-            }
-          })
-        }
+        console.log('this name is in the db: ', name)
+        console.log(userData[i].accountNumber)
         return
       }
+      else {
+        
+      }
+      console.log('name not in db.')
     }
-    SetApiRequest2(BASE_URL + defaultOptions.season + defaultOptions.gameMode.squads + "players?filter[playerIds]=" + roster.player1.accountNumber + "," + roster.player2.accountNumber + "," + roster.player3.accountNumber + "," + roster.player4.accountNumber + ",&filter[gamepad]=true"
-    )
+    console.log(roster)
   }
 
+  const getUserData = (e) => {
+    e.preventDefault()
+    checkUserDataDb(currUser)
+
+    console.log('submitted')
+  }
 
   return (
     <div className="App">
@@ -189,7 +166,7 @@ const Stats = () => {
         <form>
           <div className="season-row">
             {/* <label className="season-label">Season</label> */}
-            <select className="season-items" onChange={null}>
+            <select className="season-items" onChange={selectSeason}>
               {seasonList.map(e => {
                 return (
                   <option value={e.url} placeholder="Please Select a Season" key={e.id}>{e.seasonName}</option>
@@ -246,7 +223,7 @@ const Stats = () => {
                       </div>
                       <div className="player-name">
 
-                        <select onChange={getUserData} type="text" placeholder={userData.filter(currUser => currUser.accountNumber === e.relationships.player.data.id)[0].userName}>
+                        <select onSubmit={getUserData} onChange={changeRoster} onInput={handleUserData} type="text" placeholder={userData.filter(currUser => currUser.accountNumber === e.relationships.player.data.id)[0].userName}>
                           {userData.map(e => {
                             return (
                               <option>
@@ -295,7 +272,7 @@ const Stats = () => {
           })}
 
         </div>
-        <button onClick={updateData}>Update Roster</button>
+        <button onClick={getUserData}>Update Roster</button>
       </div>
     </div>
   );
