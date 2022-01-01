@@ -4,30 +4,11 @@ import axios from 'axios';
 import { userData } from '../data/userData.js'
 import { seasonList } from '../data/seasonList.js'
 
-const API_KEY = process.env.REACT_APP_API_KEY
+import {defaultOptions, PubgApiConfig} from '../data/config.js'
+
 const BASE_URL = "https://api.pubg.com/shards/steam/"
 
-const defaultOptions = {
-  gameMode: {
-    curr: "gameMode/squad-fpp/",
-    squads: "gameMode/squad-fpp/",
-    duos: 'gameMode/duos-fpp/'
-  },
-  season: "seasons/division.bro.official.pc-2018-14/",
-  playerId1: "account.23d9e6fd73b64e4a84fefdb5dd17c6d9",
-  playerId2: "account.363d31e855434e92b9af990059ad03b0",
-  playerId3: "account.e1963005d7b445d99f19cd91affb779d",
-  playerId4: "account.59e341f6653a4104b3bed2c4eeb00f5b",
-  // playerId5: "account.80b022e4ba474ae292555b92dc68221f",
-  // playerId6: "account.cd577e5a2afe46b3ba76e654bc57a3ed"
-}
-
-const PubgApiConfig = {
-  headers: {
-    Accept: "application/vnd.api+json",
-    Authorization: API_KEY
-  }
-}
+const PLAYERSTATS_DB = "https://localhost:52/api/players"
 
 let statsPlayer1 = { ADR: 0 }
 let statsPlayer2 = { ADR: 0 }
@@ -74,8 +55,6 @@ const Stats = () => {
         console.log(roster)
       })
   }, [roster])
-
-
 
   try {
     statsPlayer1 = {
@@ -125,6 +104,16 @@ const Stats = () => {
 
     }))
   }
+
+  const handleTeamSizeChange = (e) => {
+    const { value } = e.target
+    e.preventDefault();
+    setOptions(options => ({
+      ...options.teamSize,
+      curr: value
+    }))
+  }
+  
 
   const getUserData = (e) => {
     let currUser = e.target.value
@@ -213,13 +202,28 @@ const Stats = () => {
 
         <form onSubmit={handleGameModeChange}>
           <div className="season-row">
-            <p className="season-label">Count</p>
+            <p className="season-label">Game mode</p>
             <select onChange={handleGameModeChange}>
-              <option value={defaultOptions.gameMode.squads}>Squads</option>
-              <option value={defaultOptions.gameMode.duos}>Duos</option>
+            <option value={null}>Select Mode</option>
+              <option value="Squads">Squads</option>
+              <option value="Duos">Duos</option>
             </select>
           </div>
         </form>
+
+        <form onSubmit={handleTeamSizeChange}>
+          <div className="season-row">
+            <p className="season-label">Team Size</p>
+            <select onChange={handleTeamSizeChange}>
+            <option value={0}>Select size</option>
+              <option value={1}>1</option>
+              <option value={2}>2</option>
+              <option value={3}>3</option>
+              <option value={4}>4</option>
+            </select>
+          </div>
+        </form>
+
 
         <br />
 
@@ -256,15 +260,6 @@ const Stats = () => {
                           })}
                         </select>
 
-                      </div>
-                    </div>
-                    <div className="row">
-                      <div className="col-l">
-                        <p className="data-key">Game Mode</p>
-                      </div>
-                      <div className="line-decoration"></div>
-                      <div className="col-r">
-                        <p className="data">Squad FPP</p>
                       </div>
                     </div>
                     <div className="row">

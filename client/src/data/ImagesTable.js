@@ -36,7 +36,7 @@ const images = {
   "Bizon": Bizon,
   "DBS": DBS,
   "G36C": G36C,
-  "K2":K2,
+  "K2":K2,  
   "K9": K9,
   "M4": M4,
   "M16": M16,
