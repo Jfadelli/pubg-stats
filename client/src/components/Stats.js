@@ -46,9 +46,10 @@ const Stats = () => {
   })
 
   const [ApiRequest2, SetApiRequest2] = useState(BASE_URL + defaultOptions.season + defaultOptions.gameMode.squads + "players?filter[playerIds]=" + roster.player1.accountNumber + "," + roster.player1.accountNumber + "," + roster.player1.accountNumber + "," + roster.player1.accountNumber + ",&filter[gamepad]=true");
-
+  console.log(ApiRequest)
   useEffect(() => {
     axios.get(ApiRequest, PubgApiConfig)
+    
       .then(res => {
         const response = res.data;
         setPlayers(response.data)
